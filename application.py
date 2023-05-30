@@ -2,6 +2,7 @@
 
 
 from sanic import Sanic
+from sanic.log import logger
 
 
 app = Sanic("card_games")
@@ -38,6 +39,7 @@ async def before_server_start(app, loop):
     }
     """
 
+
 @app.route('/')
 async def index(request):
     return await app.send_file('./static/index.html')
@@ -49,17 +51,17 @@ async def ddz(request):
         # not login
         # TODO login(input name)
         return await app.send_file('./static/ddz.html')
-    _room = request.args.get('room'):
+    _room = request.args.get('room')
     if not _room:
         # login but not in room
         # TODO create room or join room(input room)
         return await app.send_file('./static/ddz.html')
-    if not app.ctx.rooms.get(room, None):
+    if not app.ctx.rooms.get(_room, None):
         # login but room not exist
         # TODO room list? or create room
         return await app.send_file('./static/ddz.html')
 
-    return await app.send_file('./static/ddz.html', room=app.ctx.rooms[room])
+    return await app.send_file('./static/ddz.html', room=app.ctx.rooms[_room])
 
 
 @app.route('/ddz/create')
@@ -124,6 +126,7 @@ async def ddz_ws(request, ws):
         # TODO do something
         # TODO send data to other users
         # TODO send data to self
+        logger.info(data)
 
 
 if __name__ == '__main__':
